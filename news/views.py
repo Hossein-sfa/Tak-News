@@ -8,6 +8,7 @@ class NewsView(generics.ListCreateAPIView):
     model = News
     serializer_class = NewsSerializer
 
+    # Filtering with query parameters like filter=Tag1-Tag2-Tag3
     def get_queryset(self):
         filters = self.request.query_params.get('filter')
         queryset = News.objects.all()

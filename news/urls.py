@@ -18,6 +18,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from .views import *
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('news/', NewsView.as_view(), name='news-list'),
+    path('news/<int:pk>', NewsDetailView.as_view()),
 ]

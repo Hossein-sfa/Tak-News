@@ -5,6 +5,7 @@ from .serializers import NewsSerializer
 from .models import News
 from .tasks import crawl_news
 
+
 class NewsView(generics.ListCreateAPIView):
     model = News
     serializer_class = NewsSerializer
@@ -19,8 +20,8 @@ class NewsView(generics.ListCreateAPIView):
         filtered_tags = filters.split('-')
         for tag in filtered_tags:
             if tag:
-                queryset = queryset.filter(tags__name__contains=tag).distinct()
-        return queryset
+                queryset = queryset.filter(tags__name__contains=tag)
+        return queryset.distinct()
 
 
 class NewsDetailView(generics.RetrieveAPIView):

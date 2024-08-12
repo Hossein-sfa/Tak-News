@@ -11,6 +11,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
+
     class Meta:
         model = News
         fields = '__all__'

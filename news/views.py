@@ -15,7 +15,7 @@ class NewsView(generics.ListCreateAPIView):
         filters = self.request.query_params.get('filter')
         queryset = News.objects.all()
         if filters is None:
-            return queryset
+            return queryset[:100]
         # Splitting multiple tags with '-'
         filtered_tags = filters.split('-')
         for tag in filtered_tags:

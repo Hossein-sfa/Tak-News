@@ -1,8 +1,9 @@
 from rest_framework import generics
+from django.http import HttpResponse
 
 from .serializers import NewsSerializer
 from .models import News
-
+from .tasks import crawl_news
 
 class NewsView(generics.ListCreateAPIView):
     model = News
@@ -18,7 +19,7 @@ class NewsView(generics.ListCreateAPIView):
         filtered_tags = filters.split('-')
         for tag in filtered_tags:
             if tag:
-                queryset = queryset.filter(tags__name__contains=tag)
+                queryset = queryset.filter(tags__name__contains=tag).distinct()
         return queryset
 
 
@@ -27,3 +28,7 @@ class NewsDetailView(generics.RetrieveAPIView):
     serializer_class = NewsSerializer
     lookup_field = 'pk'
 
+
+def test(request):
+    crawl_news()
+    return HttpResponse(status=204)

@@ -6,8 +6,19 @@ import requests
 from .models import News, Tag
 
 
-# Function to crawl news articles
 def crawl_news():
+    """
+    Crawls news articles from a website and saves them to a database.
+    This function uses a web driver to navigate through the website's news archive pages and extract information from each news article.
+    The information includes the title, content, source URL, and tags of the news article.
+    The function checks if each news article already exists in the database or not.
+    If an article exists in database, the crawling process stops.
+    Returns:
+        None
+    Raises:
+        Exception: If an error occurs during the crawling process.
+    """
+    
     added_news = 0
     page_number = 1
     news_archive_url = 'https://www.zoomit.ir/archive/?sort=Newest&publishPeriod=All&readingTimeRange=All&pageNumber='
@@ -59,7 +70,7 @@ def crawl_news():
                     crawled_news = News.objects.create(title=title, content=content, source=link)
                     
                     # Create or get Tag objects and add them to the News object
-                    tags_objects = [Tag.objects.get_or_create(name=tag.get_text()) for tag in a_tags]
+                    tags_objects = [Tag.objects.get_or_create(name=tag.get_text())[0] for tag in a_tags]
                     crawled_news.tags.add(*tags_objects)
                     crawled_news.save()
                     

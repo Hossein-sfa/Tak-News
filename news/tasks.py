@@ -44,7 +44,9 @@ def crawl_news():
             # Process each news article
             for link_tag in news_links_tags:
                 link = link_tag['href']
-                
+                advertise = link_tag.find('span', attrs={'class': 'typography__StyledDynamicTypographyComponent-t787b7-0 eWamLU'})
+                if advertise and advertise.get_text() == 'تبلیغات':
+                    continue  # Skip advertisements
                 # Check if the news article already exists in the database
                 if not News.objects.filter(source=link).exists():
                     # Fetch and parse the article page

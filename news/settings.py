@@ -138,6 +138,6 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
 CELERY_BEAT_SCHEDULE = {
       'crawl-every-10-minutes': {
         'task': 'news.tasks.crawl_news',
-        'schedule': 600.0,
+        'schedule': 100.0,
     },
 }

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     # my apps
-    'news',
+    'news.configs.NewsConfig',
     'rest_framework', 
 ]
 
@@ -129,3 +129,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# celery configuration
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+
+# celery beat configuration
+CELERY_BEAT_SCHEDULE = {
+      'crawl-every-10-minutes': {
+        'task': 'news.tasks.crawl_news',
+        'schedule': 600.0,
+    },
+}

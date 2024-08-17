@@ -1,11 +1,13 @@
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver
+from celery import shared_task
 from time import sleep
 import requests
 
 from .models import News, Tag
 
 
+@shared_task()
 def crawl_news():
     """
     Crawls news articles from a website and saves them to a database.
@@ -22,11 +24,11 @@ def crawl_news():
     added_news = 0
     page_number = 1
     news_archive_url = 'https://www.zoomit.ir/archive/?sort=Newest&publishPeriod=All&readingTimeRange=All&pageNumber='
-    driver = webdriver.Chrome()
     
     # Loop through pages (up to 500)
     while page_number <= 500:
         try:
+            driver = webdriver.Chrome()
             driver.get(news_archive_url + str(page_number))
             sleep(5)  # Wait for page to load and avoid throttling
             
@@ -82,9 +84,6 @@ def crawl_news():
                     return
         except Exception as e:
             print(e)
-    
-    # Print the total number of crawled news articles
-    print('crawled news: ' + str(added_news))
     
     # Close the WebDriver
     driver.quit()

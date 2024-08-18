@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     # my apps
-    'news.configs.NewsConfig',
+    'news',
     'rest_framework', 
 ]
 
@@ -138,6 +138,6 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
 CELERY_BEAT_SCHEDULE = {
       'crawl-every-10-minutes': {
         'task': 'news.tasks.crawl_news',
-        'schedule': 100.0,
+        'schedule': crontab(minute='*/10'),
     },
 }

@@ -1,10 +1,11 @@
+import os
 from celery import Celery
 
+# Set default Django settings
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'news.settings')
 
-app = Celery()
+app = Celery('news')
 
-# Load celery configuration from django settings
-app.config_from_object("django.conf:settings", namespace="CELERY")
-
-# Load and register tasks from tasks.py
+# Load task modules from all registered Django app configs.
+app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()

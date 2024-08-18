@@ -1,13 +1,14 @@
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver
-from celery import shared_task
 from time import sleep
 import requests
 
+
 from .models import News, Tag
+from .celery import app
 
 
-@shared_task()
+@app.task
 def crawl_news():
     """
     Crawls news articles from a website and saves them to a database.
@@ -44,9 +45,11 @@ def crawl_news():
             # Process each news article
             for link_tag in news_links_tags:
                 link = link_tag['href']
+                
+                # Skip advertisements
                 advertise = link_tag.find('span', attrs={'class': 'typography__StyledDynamicTypographyComponent-t787b7-0 eWamLU'})
                 if advertise and advertise.get_text() == 'تبلیغات':
-                    continue  # Skip advertisements
+                    continue  
                 # Check if the news article already exists in the database
                 if not News.objects.filter(source=link).exists():
                     # Fetch and parse the article page
@@ -77,7 +80,6 @@ def crawl_news():
                     tags_objects = [Tag.objects.get_or_create(name=tag.get_text())[0] for tag in a_tags]
                     crawled_news.tags.add(*tags_objects)
                     crawled_news.save()
-                    
                     added_news += 1
                 else:
                     # If the article already exists, stop crawling because rest are already crawled

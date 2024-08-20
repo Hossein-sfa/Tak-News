@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-b6)2f*$x%!#a29&jwr-&weah&fu72m0ang@l3ribw$h@*l)1qb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -83,7 +83,7 @@ DATABASES = {
         "NAME": "TakNewsDb",
         "USER": "root",
         "PASSWORD": "1234",
-        "HOST": "localhost",
+        "HOST": "0.0.0.0",
         "PORT": "5432",
     }
 }

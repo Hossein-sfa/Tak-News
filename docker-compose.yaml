@@ -1,0 +1,75 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: TakNewsDb
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    restart: always
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --no-input && gunicorn news.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: 0.0.0.0
+      DATABASE_PORT: 5432
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+
+  celery:
+    build: .
+    command: celery -A news worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+      - web
+    environment:
+      DATABASE_URL: postgresql://root:1234@db:5432/TakNewsDb
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+
+  beat:
+    build: .
+    command: celery -A news beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgresql://root:1234@db:5432/TakNewsDb
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+
+  flower:
+    image: mher/flower:latest
+    command: celery --broker=redis://redis:6379 flower --port=5555
+    ports:
+      - '5555:5555'
+    depends_on:
+      - redis
+      - db
+      - web
+      - celery
+      - beat
+
+volumes:
+  postgres_data:

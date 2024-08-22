@@ -1,3 +1,5 @@
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver
 from time import sleep
@@ -25,11 +27,12 @@ def crawl_news():
     added_news = 0
     page_number = 1
     news_archive_url = 'https://www.zoomit.ir/archive/?sort=Newest&publishPeriod=All&readingTimeRange=All&pageNumber='
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     
     # Loop through pages (up to 500)
     while page_number <= 500:
         try:
-            driver = webdriver.Chrome()
+            # driver = webdriver.Chrome()
             driver.get(news_archive_url + str(page_number))
             sleep(5)  # Wait for page to load and avoid throttling
             
